@@ -20,6 +20,7 @@ class LineConverter(object):
   _normal  = re.compile( r'^[\s\d]{5}\s+[^!\s]|^\s*$' ).match
   _comment = re.compile( r'^[^\d\s#]|^\s*!' ).match
   _preproc = re.compile( r'^#' ).match
+  _indent  = lambda _, s: ''.join( re.findall( r'\n?([ \v\f\t\d]{5}\s*)\S.*', s )[:1] )
   
   def __init__( self ):
     self._ppContinue = False
@@ -60,7 +61,8 @@ class LineConverter(object):
   def merge( self, line ):
     buffered = self._lineBuff or ''
     line     = line[6:]
-    self._lineBuff = buffered + ' &\n' + line
+    indent   = ' ' * len( self._indent( buffered ) )
+    self._lineBuff = buffered + ' &\n' + indent + line
 
 
   def flush( self ):
